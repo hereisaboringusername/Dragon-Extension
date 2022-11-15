@@ -18,9 +18,14 @@ import com.badlogic.gdx.math.Vector3;
 
 public class DragonAnimationDemo4 implements ApplicationListener {
     private SpriteBatch batch;
+    //Project 2: Ashley Zingillioglu s1310999
+    Array<DragonSprite> dragons;
     private float elapsedTime;
     // Make a dragon sprite
     private DragonSprite dragonSprite;
+    //Project 2: Ashley Zingillioglu s1310999
+    long lastDragonTime;
+    int numberOfDragons= 0;
     // Can't match mouse click position to dragon sprite rectangle without camera
 	OrthographicCamera camera;
  	// Needed to unproject mouse click position in render
@@ -33,11 +38,11 @@ public class DragonAnimationDemo4 implements ApplicationListener {
 
     @Override
     public void create() {    
-    
 	
         batch = new SpriteBatch();
         // Construct dragon sprite
         dragonSprite = new DragonSprite();
+	
         // Create the camera & mousePosition vector
      	camera = new OrthographicCamera();
      	camera.setToOrtho(false, 1000, 1000); // Same width & height in DesktopLauncher
@@ -51,6 +56,11 @@ public class DragonAnimationDemo4 implements ApplicationListener {
      	cursorPixmap = new Pixmap( Gdx.files.internal("cursor/alienXhairs.png") );
      	Gdx.graphics.setCursor( Gdx.graphics.newCursor(cursorPixmap, cursorPixmap.getWidth() / 2, 
      			cursorPixmap.getHeight() / 2) );
+			
+	//Project 2: Ashley Zingillioglu s1310999
+	dragons = new Array<DragonSprite>(); 
+        spawnDragon();
+
     }
 
     @Override
@@ -58,6 +68,21 @@ public class DragonAnimationDemo4 implements ApplicationListener {
         batch.dispose();
         cursorPixmap.dispose();
     }
+    
+    //Project 2: Ashley Zingillioglu s1310999
+     private void spawnDragon() {
+     if (numberOfDragons >= 10)
+     return; 
+     
+      DragonSprite dragon = new DragonSprite();
+      float x = MathUtils.random(0, 800 - 64);
+      float y = 400;
+      dragon.setPosition(x, y);
+      dragons.add(dragon);
+      lastDragonTime = TimeUtils.nanoTime();
+      numberOfDragons++;
+   } // end spawnDragon()
+
 
     @Override
     public void render() {     
@@ -76,19 +101,28 @@ public class DragonAnimationDemo4 implements ApplicationListener {
         batch.end();
 
     	elapsedTime += Gdx.graphics.getDeltaTime();
-
+        
+	//Project 2: Ashley Zingillioglu s1310999
+	   Iterator<DragonSprite> iter = dragons.iterator(); 
+      while (iter.hasNext()) {
+         DragonSprite dragon = iter.next();
+	 
+	 //Project 2: Ashley Zingillioglu s1310999
     	// Move dragonSprite across screen horizontally, or vertically...
-    	if (dragonSprite.isAlive()) {
-    		dragonSprite.setX(dragonSprite.getX() + 5);
-    		// If dragonSprite leaves screen horizontally, it will come around again
-    		if (dragonSprite.getX() > 1100) {
-    			dragonSprite.setPosition(-100, 500);
+    	if (dragon.isAlive()) {
+    		dragon.setX(dragon.getX() + 5);
+    		// If dragon leaves screen horizontally, it will come around again
+    		if (dragon.getX() > 1100) {
+    			dragon.setPosition(-100, 500);
     		}
     	}
     	else {
-    		dragonSprite.setY(dragonSprite.getY() - 10);
+    		dragon.setY(dragon.getY() - 10);
+	        float y = dragon.getY();
+		  if (y + 64 < 0) //replace 64 with size of sprite 
+            iter.remove();
     	}
-    	
+	}
         // Set the next frame for the dragonSprite
         dragonSprite.update(elapsedTime);
         
@@ -104,6 +138,9 @@ public class DragonAnimationDemo4 implements ApplicationListener {
         		dragonSprite.kill();
         	}
         }
+	
+	if (TimeUtils.nanoTime() - lastDragonTime > 1000000000)
+         spawnDragon();
     }
 
     @Override
