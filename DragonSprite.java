@@ -18,6 +18,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
+//Project 2: Ashley Zingillioglu s1310999
+import java.util.Random;
+
 public class DragonSprite extends Sprite {
     private TextureAtlas textureAtlas;
     private Animation animation;
@@ -56,7 +59,14 @@ public class DragonSprite extends Sprite {
     		dragonDeathSound = Gdx.audio.newSound(Gdx.files.internal("za_dragon/dragon_death2.wav"));
     	}
     }
-    
+//Project 2: Ashley Zingillioglu s1310999
+    public void turboMode () {
+        setColor(Color.RED);
+        setSize( this.getWidth()/2,this.getHeight()/2);
+        animation.setFrameDuration (animation.getFrameDuration()/ 3);
+
+    }
+
     public boolean isAlive() {
     	return alive;
     }
@@ -67,20 +77,9 @@ public class DragonSprite extends Sprite {
     	dragonDeathSound.play();
     }
     
-  //3a
-  //Project 2: Ashley Zingillioglu s1310999
     public void update(float elapsedTime) {
-    
         // Set the next frame for the DragonSprite:
     	if (alive) {
-        //Assume running 60 frames per second
-          if (elapsedTime % 60 == 0) {
-            float random = MathUtils.random(1,4);
-          if ( random == 1) {
-            //Activate turbo mode. 
-          }
-          }
-        
         	// Set DragonSprite's next frame from the animation:
     		// setRegion(animation.getKeyFrame(elapsedTime, true));
     		// getKeyFrame() may return Object in some instances, so would need
